@@ -1,0 +1,28 @@
+# Secrets
+.env
+.env.*
+
+# Virtual environment
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Django
+*.log
+db.sqlite3
+media/
+
+# Test outputs
+*_output.txt
+payment_errors.txt
+receipt_*.pdf
+schema.yml
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
