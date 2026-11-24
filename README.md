@@ -186,19 +186,8 @@ The Django REST Framework backend has implemented core pawn shop management modu
 Frontend development, production deployment, and additional future enhancements are not included in the current implementation.
 
 ## Future Enhancements
-
-- React + Vite frontend
 - Advanced dashboard and analytics
 - Multilingual interface (Tamil, English, and Tanglish)
 - AI-powered search and assistance
 - Production deployment and monitoring
 
-## Author
-
-**Kirubakar**
-
-GitHub: https://github.com/Mkirubakar11
-
----
-
-*LOANER – Simplifying Pawn Shop Management Through Technology.*
