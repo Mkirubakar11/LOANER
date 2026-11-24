@@ -1,12 +1,23 @@
 
 from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 
 from rest_framework import serializers
 
-from .models import (OwnerProfile, Shop, ShopSettings, Customer, Loan, GoldItem,Payment, LoanCreditBalance, LoanCreditTransaction,)
+from .models import (
+    OwnerProfile,
+    Shop,
+    ShopSettings,
+    Customer,
+    Loan,
+    GoldItem,
+    Payment,
+    LoanCreditBalance,
+    LoanCreditTransaction,
+)
 
 User = get_user_model()
 
@@ -18,7 +29,6 @@ User = get_user_model()
 class OwnerRegistrationSerializer(serializers.Serializer):
 
     username = serializers.CharField(max_length=150)
-
     email = serializers.EmailField()
 
     password = serializers.CharField(
@@ -96,42 +106,12 @@ class ShopSerializer(serializers.ModelSerializer):
 
         read_only_fields = [
             "id",
+            "shop_code",
             "is_active",
             "created_at",
             "updated_at",
         ]
 
-    def validate_shop_code(self, value):
-
-        value = value.strip()
-
-        if not value:
-            raise serializers.ValidationError(
-                "Shop code cannot be empty."
-            )
-
-        request = self.context.get("request")
-
-        if request and request.user.is_authenticated:
-
-            queryset = Shop.objects.filter(
-                owner=request.user,
-                shop_code__iexact=value
-            )
-
-            if self.instance:
-                queryset = queryset.exclude(
-                    pk=self.instance.pk
-                )
-
-            if queryset.exists():
-                raise serializers.ValidationError(
-                    "This shop code is already used by your shop."
-                )
-
-        return value
-    
-    
 
 # ==========================================
 # SHOP SETTINGS SERIALIZER
@@ -182,21 +162,11 @@ class CustomerSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "shop",
+            "customer_number",
             "is_active",
             "created_at",
             "updated_at",
         ]
-
-    def validate_customer_number(self, value):
-
-        value = value.strip()
-
-        if not value:
-            raise serializers.ValidationError(
-                "Customer number cannot be empty."
-            )
-
-        return value
 
     def validate_full_name(self, value):
 
@@ -218,9 +188,10 @@ class CustomerStatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ["id", "is_active"]
-        read_only_fields = ["id"]
 
+        fields = ["id", "is_active"]
+
+        read_only_fields = ["id"]
 
 
 # ==========================================
@@ -250,6 +221,7 @@ class LoanSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "shop",
+            "loan_number",
             "interest_rate",
             "status",
             "created_at",
@@ -294,7 +266,6 @@ class LoanSerializer(serializers.ModelSerializer):
         return attrs
 
 
-
 # ==========================================
 # LOAN STATUS SERIALIZER
 # ==========================================
@@ -303,7 +274,9 @@ class LoanStatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Loan
+
         fields = ["id", "status"]
+
         read_only_fields = ["id"]
 
     def validate_status(self, value):
@@ -365,9 +338,8 @@ class GoldItemSerializer(serializers.ModelSerializer):
             })
 
         return attrs
- 
- 
- 
+
+
 # ==========================================
 # PAYMENT MANAGEMENT SERIALIZER
 # ==========================================
@@ -398,7 +370,6 @@ class PaymentSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
-    # Validate total payment amount
     def validate_amount(self, value):
 
         if value <= 0:
@@ -408,7 +379,6 @@ class PaymentSerializer(serializers.ModelSerializer):
 
         return value
 
-    # Validate interest allocation
     def validate_interest_amount(self, value):
 
         if value < 0:
@@ -418,7 +388,6 @@ class PaymentSerializer(serializers.ModelSerializer):
 
         return value
 
-    # Validate principal allocation
     def validate_principal_amount(self, value):
 
         if value < 0:
@@ -428,7 +397,6 @@ class PaymentSerializer(serializers.ModelSerializer):
 
         return value
 
-    # Validate complete payment allocation
     def validate(self, attrs):
 
         amount = attrs.get("amount")
@@ -471,7 +439,6 @@ class PaymentSerializer(serializers.ModelSerializer):
                 })
 
         return attrs
-
 
 
 # ==========================================
